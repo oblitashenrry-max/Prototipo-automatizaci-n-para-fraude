@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Formulario de Siniestros</title>
+<style>
+  :root{ --bg:#0a0f0a; --card:#0f1510; --text:#b7fbb6; --muted:#7bdc8a; --accent:#10b981; --danger:#ef4444; --warn:#f59e0b; --border:#17442b; --input:#111827; }
+  *{box-sizing:border-box}
+  body{ background:var(--bg); color:var(--text); font-family:system-ui,Arial,sans-serif; max-width:1100px; margin:24px auto; padding:0 16px; }
+  h1{ margin:4px 0 12px; }
+  fieldset{ background:var(--card); border:1px solid var(--border); border-radius:12px; margin-bottom:16px; padding:16px; }
+  legend{ font-weight:800; color:var(--muted); padding:0 8px; }
+  label{ display:block; margin:8px 0 6px; color:var(--muted); font-weight:600; }
+  input,select,textarea{ width:100%; padding:12px; border:1px solid var(--border); border-radius:10px; background:var(--input); color:var(--text); outline:none; }
+  input:focus,select:focus,textarea:focus{ border-color:var(--accent); box-shadow:0 0 0 2px #10b98133; }
+  textarea{ min-height:140px; resize:vertical; }
+  .row{ display:grid; gap:14px; grid-template-columns:1fr 1fr; }
+  .hint{ font-size:12px; color:#8eeaa1; opacity:.85; }
+  .pill{ display:inline-block; padding:6px 10px; border-radius:999px; background:#10381e; margin-right:8px; font-size:12px; border:1px solid var(--border); }
+  .ok{ color:#86efac; } .warn{ color:#fbbf24; } .err{ color:#fca5a5; }
+  .hidden{ display:none; }
+  button{ background:var(--accent); color:#052312; padding:12px 18px; border:none; border-radius:10px; cursor:pointer; font-weight:800; }
+  button[disabled]{ opacity:.45; cursor:not-allowed; }
+  .grid2{ display:grid; grid-template-columns: 1fr 320px; gap:16px; align-items:start; }
+  .panel{ background:#0d1410; border:1px solid var(--border); border-radius:12px; padding:12px; }
+  .panel h3{ margin:6px 0 10px; font-size:14px; color:#aaf0b5; }
+  .kv{ display:flex; justify-content:space-between; font-size:12px; padding:4px 0; border-bottom:1px dashed #173e26; }
+  .kv:last-child{ border-bottom:0; }
+  .kv b{ color:#c1ffd1; }
+</style>
+</head>
+<body>
+<h1>Formulario de Siniestros</h1>
+<p class="hint">Completa los datos y adjunta evidencias claras. El sistema valida coherencias antes de registrar.</p>
+
+<div class="grid2">
+  <form id="frm" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="prelinks" id="prelinks" />
+    <input type="hidden" name="preFolderId" id="preFolderId" />
+
+    <fieldset>
+      <legend>Identificación del asegurado</legend>
+      <div class="row">
+        <div>
+          <label>Tipo_documento</label>
+          <select name="Tipo_documento" id="Tipo_documento" required>
+            <option value="">— Selecciona —</option>
+            <option selected>DNI</option><option>Carnet Extranjería</option><option>Pasaporte</option>
+          </select>
+        </div>
+        <div>
+          <label>Numero_documento</label>
+          <input name="Numero_documento" id="Numero_documento" autocomplete="off" />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>Poliza</label>
+          <input name="Poliza" id="Poliza" autocomplete="off" />
+          <div class="hint">Puedes validar por Póliza, Documento o Patente.</div>
+        </div>
+        <div>
+          <label>Patente</label>
+          <input name="Patente" id="Patente" autocomplete="off" />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>Nombre_asegurado</label>
+          <input name="Nombre_asegurado" id="Nombre_asegurado" required />
+        </div>
+        <div>
+          <label>Apellido_asegurado</label>
+          <input name="Apellido_asegurado" id="Apellido_asegurado" required />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>email_asegurado</label>
+          <input type="email" name="email_asegurado" id="email_asegurado" required />
+        </div>
+        <div>
+          <label>Celular</label>
+          <input name="Celular" id="Celular" required />
+        </div>
+      </div>
+      <div id="matchInfo" class="hint"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Datos del siniestro</legend>
+      <div class="row">
+        <div>
+          <label>Tipo_siniestro</label>
+          <select name="Tipo_siniestro" id="Tipo_siniestro" required>
+            <option value="">— Selecciona —</option>
+            <option>Daño parcial</option><option>Daño total</option>
+            <option>Robo parcial</option><option>Robo total</option>
+            <option>Incendio parcial</option><option>Incendio total</option>
+          </select>
+        </div>
+        <div>
+          <label>Marca</label>
+          <input name="Marca" id="Marca" required />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>Modelo</label>
+          <input name="Modelo" id="Modelo" required />
+        </div>
+        <div>
+          <label>Patente (confirmación)</label>
+          <input name="Patente_confirm" id="Patente2" placeholder="Repite la patente" />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>Fecha_ocurrencia</label>
+          <input type="date" name="Fecha_ocurrencia" id="Fecha_ocurrencia" required />
+        </div>
+        <div>
+          <label>Hora_ocurrencia</label>
+          <input type="time" name="Hora_ocurrencia" id="Hora_ocurrencia" required />
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Relato y detalles</legend>
+      <label>Relato_asegurado</label>
+      <textarea name="Relato_asegurado" id="Relato_asegurado" placeholder="Ej.: Av. Los Incas con Jr. Lima, giré a la izquierda, semáforo verde, taxi a alta velocidad me impactó en la parte trasera. Llovía, testigos y llegó la PNP."></textarea>
+      <div class="row">
+        <div>
+          <label>Parte_afectada</label>
+          <select name="Parte_afectada" id="Parte_afectada" required>
+            <option value="">— Selecciona —</option>
+            <option>Frontal</option>
+            <option>Trasera</option>
+            <option>Lateral derecha</option>
+            <option>Lateral izquierda</option>
+          </select>
+        </div>
+        <div>
+          <label>Dano_a_terceros</label>
+          <select name="Dano_a_terceros" id="Dano_a_terceros" required>
+            <option value="">— Selecciona —</option>
+            <option>Sí</option>
+            <option>No</option>
+          </select>
+        </div>
+      </div>
+      <div class="hint">Describe lugar, maniobra, impacto (frontal/trasera/lateral), clima, terceros, hora y si hubo PNP/testigos.</div>
+    </fieldset>
+
+    <fieldset id="boxAdjuntos" class="hidden">
+      <legend>Adjuntos</legend>
+      <div class="row">
+        <div>
+          <label>Adjuntar_licencia</label>
+          <input type="file" name="Adjuntar_licencia" id="Adjuntar_licencia" accept=".pdf,image/*" />
+        </div>
+        <div>
+          <label>Adjuntar_imagen_frontal</label>
+          <input type="file" name="Adjuntar_imagen_frontal" id="Adjuntar_imagen_frontal" accept="image/*" />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>Adjuntar_imagen_trasera</label>
+          <input type="file" name="Adjuntar_imagen_trasera" id="Adjuntar_imagen_trasera" accept="image/*" />
+        </div>
+        <div>
+          <label>Adjuntar_imagen_dano</label>
+          <input type="file" name="Adjuntar_imagen_dano" id="Adjuntar_imagen_dano" accept="image/*" />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>Adjuntar_imagen_opcional</label>
+          <input type="file" name="Adjuntar_imagen_opcional" id="Adjuntar_imagen_opcional" accept="image/*" />
+        </div>
+        <div>
+          <label>Adjuntar_presupuesto</label>
+          <input type="file" name="Adjuntar_presupuesto" id="Adjuntar_presupuesto" accept=".pdf,image/*" />
+        </div>
+      </div>
+      <p class="hint">Para “Daño parcial” adjunta imagen del daño y presupuesto.</p>
+    </fieldset>
+
+    <input type="hidden" name="Validacion_base" id="Validacion_base" value="PENDIENTE" />
+    <button id="btnSend" type="submit">Enviar formulario</button>
+    <span id="status" class="hint" style="margin-left:12px;"></span>
+  </form>
+
+  <div class="panel" id="panelChecklist">
+    <h3>Checklist de validaciones (previo a enviar)</h3>
+    <div class="kv"><span>Base póliza:</span> <b id="ck_base">—</b></div>
+    <div class="kv"><span>Patente OCR:</span> <b id="ck_placa">—</b></div>
+    <div class="kv"><span>Licencia Nº:</span> <b id="ck_licnum">—</b></div>
+    <div class="kv"><span>Licencia Nombres/Apellidos:</span> <b id="ck_licname">—</b></div>
+    <div class="kv"><span>Licencia DNI embebido:</span> <b id="ck_licdni">—</b></div>
+    <div class="kv"><span>Licencia Vigencia:</span> <b id="ck_licvig">—</b></div>
+    <div class="kv"><span>Presupuesto:</span> <b id="ck_pres">—</b></div>
+    <div class="kv"><span>Relato (tags):</span> <b id="ck_relato">—</b></div>
+  </div>
+</div>
+
+<script>
+  const $ = s=>document.querySelector(s);
+  const statusEl = $('#status');
+  const matchInfo = $('#matchInfo');
+  const frm = $('#frm');
+  const boxAdjuntos = $('#boxAdjuntos');
+  const btnSend = $('#btnSend');
+
+  // Checklist panel refs
+  const CK = {
+    base: $('#ck_base'), placa: $('#ck_placa'), licnum: $('#ck_licnum'),
+    licname: $('#ck_licname'), licdni: $('#ck_licdni'), licvig: $('#ck_licvig'),
+    pres: $('#ck_pres'), relato: $('#ck_relato')
+  };
+
+  function setCK(el, val){ el.textContent = val; }
+
+  function toggleAdjuntos(){
+    boxAdjuntos.classList.toggle('hidden', $('#Tipo_siniestro').value !== 'Daño parcial');
+  }
+  $('#Tipo_siniestro').addEventListener('change', toggleAdjuntos);
+
+  const fieldsForValidation = ['#Poliza','#Tipo_documento','#Numero_documento','#Patente','#Nombre_asegurado','#Apellido_asegurado','#email_asegurado','#Celular','#Marca','#Modelo','#Relato_asegurado','#Fecha_ocurrencia','#Hora_ocurrencia','#Parte_afectada','#Dano_a_terceros'];
+  function gatherPayload(){
+    return {
+      Poliza: $('#Poliza').value,
+      Tipo_documento: $('#Tipo_documento').value,
+      Numero_documento: $('#Numero_documento').value,
+      Patente: $('#Patente').value || $('#Patente2').value,
+      Nombre_asegurado: $('#Nombre_asegurado').value,
+      Apellido_asegurado: $('#Apellido_asegurado').value,
+      email_asegurado: $('#email_asegurado').value,
+      Celular: $('#Celular').value,
+      Marca: $('#Marca').value,
+      Modelo: $('#Modelo').value,
+      Tipo_siniestro: $('#Tipo_siniestro').value,
+      Fecha_ocurrencia: $('#Fecha_ocurrencia').value,
+      Hora_ocurrencia: $('#Hora_ocurrencia').value,
+      Relato_asegurado: $('#Relato_asegurado').value,
+      Parte_afectada: $('#Parte_afectada').value,
+      Dano_a_terceros: $('#Dano_a_terceros').value,
+
+      // campos compactos para validateAgainstBase
+      poliza: $('#Poliza').value,
+      tipoDoc: $('#Tipo_documento').value,
+      numeroDoc: $('#Numero_documento').value,
+      patente: $('#Patente').value || $('#Patente2').value,
+      nombre: $('#Nombre_asegurado').value,
+      apellido: $('#Apellido_asegurado').value,
+      marca: $('#Marca').value,
+      modelo: $('#Modelo').value
+    };
+  }
+
+  let tmr;
+  function debouncedValidate(){ clearTimeout(tmr); tmr = setTimeout(runValidate, 350); }
+  fieldsForValidation.forEach(s=>{ const el=document.querySelector(s); if(el) el.addEventListener('input', debouncedValidate); });
+
+  function renderValidation(resp){
+    const softWarnings = resp.softWarnings || [];
+    const reasons = resp.reasons || [];
+    const baseStatus = resp.baseStatus || (resp.found ? 'VALIDADO' : 'NO_ENCONTRADO');
+
+    const pills=[];
+    if (baseStatus==='VALIDADO') pills.push('<span class="pill ok">Póliza vigente</span>');
+    if (baseStatus==='NO_VIGENTE') pills.push('<span class="pill err">Póliza no vigente</span>');
+    if (baseStatus==='NO_ENCONTRADO') pills.push('<span class="pill err">No encontrado en base</span>');
+    if (reasons.length) pills.push('<span class="pill err">'+reasons.join(' | ')+'</span>');
+    if (softWarnings.length) pills.push('<span class="pill warn">'+softWarnings.join(' | ')+'</span>');
+    matchInfo.innerHTML = pills.join(' ');
+
+    $('#Validacion_base').value = baseStatus;
+
+    // pinta checklist (base)
+    setCK(CK.base, baseStatus);
+
+    if (resp.record){
+      if ($('#Nombre_asegurado').value.trim()==='' && resp.record.Nombre_asegurado) $('#Nombre_asegurado').value = resp.record.Nombre_asegurado;
+      if ($('#Apellido_asegurado').value.trim()==='' && resp.record.Apellido_asegurado) $('#Apellido_asegurado').value = resp.record.Apellido_asegurado;
+      if ($('#Celular').value.trim()==='' && resp.record.Celular) $('#Celular').value = resp.record.Celular;
+      if ($('#email_asegurado').value.trim()==='' && resp.record.email_asegurado) $('#email_asegurado').value = resp.record.email_asegurado;
+      if ($('#Marca').value.trim()==='' && resp.record.Marca) $('#Marca').value = resp.record.Marca;
+      if ($('#Modelo').value.trim()==='' && resp.record.Modelo) $('#Modelo').value = resp.record.Modelo;
+      if ($('#Poliza').value.trim()==='' && resp.record.Poliza) $('#Poliza').value = resp.record.Poliza;
+      if ($('#Patente').value.trim()==='' && resp.record.Patente) $('#Patente').value = resp.record.Patente;
+    }
+  }
+
+  async function refreshChecklistPanel(){
+    try{
+      const payload = gatherPayload();
+      const prelinks = $('#prelinks').value || '{}';
+      const diag = await new Promise((resolve,reject)=>{
+        google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).previewDiagnostics(payload, prelinks);
+      });
+
+      // Patente
+      const plateTxt = (diag.ocr && diag.ocr.patente) ? (diag.ocr.patente + (diag.ocr.patenteMatch===false?' (NO coincide)':' (coincide)')) : '—';
+      setCK(CK.placa, plateTxt);
+
+      // Licencia
+      const lic = (diag.ocr && diag.ocr.license) ? diag.ocr.license : {};
+      setCK(CK.licnum, lic.num || '—');
+      const fullOCR = ((lic.nombres||'')+' '+(lic.apellidos||'')).trim();
+      setCK(CK.licname, fullOCR || '—');
+
+      // DNI embebido
+      const dniDecl = ($('#Numero_documento').value||'').replace(/\D/g,'');
+      let embTxt = '—';
+      if (dniDecl && lic.dniTail){
+        embTxt = (lic.dniTail===dniDecl) ? 'coincide' : 'NO coincide';
+      }
+      setCK(CK.licdni, embTxt);
+
+      // Vigencia
+      let vigTxt = '—';
+      if (lic.fechaVenc){
+        const dv = new Date(lic.fechaVenc.replace(/-/g,'/'));
+        vigTxt = (isNaN(dv) ? 'fecha inválida' : (dv >= new Date() ? 'vigente' : 'vencida'));
+      }
+      setCK(CK.licvig, vigTxt);
+
+      // Presupuesto
+      const pres = diag.presupuesto || {};
+      setCK(CK.pres, pres.status==='OK' ? (pres.amount+' '+(pres.currency||'')) : (pres.status||'—'));
+
+      // Relato
+      const tags = (diag.relato && Array.isArray(diag.relato.tags)) ? diag.relato.tags.slice(0,6).join('; ') : '—';
+      setCK(CK.relato, tags);
+
+    }catch(e){
+      // silencioso
+    }
+  }
+
+  async function runValidate(){
+    const payload = {
+      poliza: $('#Poliza').value,
+      tipoDoc: $('#Tipo_documento').value,
+      numeroDoc: $('#Numero_documento').value,
+      patente: $('#Patente').value || $('#Patente2').value,
+      nombre: $('#Nombre_asegurado').value,
+      apellido: $('#Apellido_asegurado').value,
+      email: $('#email_asegurado').value,
+      celular: $('#Celular').value,
+      marca: $('#Marca').value,
+      modelo: $('#Modelo').value
+    };
+    statusEl.textContent = 'Validando…';
+    google.script.run
+      .withSuccessHandler(function(resp){
+        statusEl.textContent='';
+        renderValidation(resp);
+        refreshChecklistPanel();
+      })
+      .withFailureHandler(function(err){
+        statusEl.textContent = 'Error de validación: '+err.message;
+      })
+      .validateAgainstBase(payload);
+  }
+
+  // Pre-subida base64 (misma carpeta para todos)
+  const fileFields = [
+    {id:'Adjuntar_licencia', label:'Licencia', field:'Adjuntar_licencia'},
+    {id:'Adjuntar_imagen_frontal', label:'Frontal', field:'Adjuntar_imagen_frontal'},
+    {id:'Adjuntar_imagen_trasera', label:'Trasera', field:'Adjuntar_imagen_trasera'},
+    {id:'Adjuntar_imagen_dano', label:'Daño', field:'Adjuntar_imagen_dano'},
+    {id:'Adjuntar_imagen_opcional', label:'Opcional', field:'Adjuntar_imagen_opcional'},
+    {id:'Adjuntar_presupuesto', label:'Presupuesto', field:'Adjuntar_presupuesto'}
+  ];
+
+  function toBase64(arrayBuffer){
+    let binary = '';
+    const bytes = new Uint8Array(arrayBuffer);
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i++) binary += String.fromCharCode(bytes[i]);
+    return btoa(binary);
+  }
+
+  async function preUploadAll(){
+    const map = {};
+    const policy = $('#Poliza').value || 'SIN_POLIZA';
+    const folderDateKey = new Date().toISOString().slice(0,10).replace(/-/g,'');
+    let preFolderId = $('#preFolderId').value || '';
+
+    for (const cfg of fileFields){
+      const input = document.getElementById(cfg.id);
+      if (!input || !input.files || input.files.length===0) continue;
+
+      for (const f of input.files){
+        const buf = await f.arrayBuffer();
+        const base64 = toBase64(buf);
+
+        const res = await new Promise(function(resolve,reject){
+          google.script.run
+            .withSuccessHandler(resolve)
+            .withFailureHandler(reject)
+            .uploadBase64({
+              folderDateKey: folderDateKey, policy: policy,
+              field: cfg.field, label: cfg.label,
+              name: f.name, mime: f.type || 'application/octet-stream',
+              dataBase64: base64, preFolderId: preFolderId || null
+            });
+        });
+
+        if (res && res.ok){
+          if (!preFolderId && res.folderId){
+            preFolderId = res.folderId;
+            $('#preFolderId').value = preFolderId;
+          }
+          if (!map[cfg.field]) map[cfg.field] = [];
+          map[cfg.field].push({ url: res.url, name: cfg.label }); 
+          $('#prelinks').value = JSON.stringify(map);
+        }
+      }
+    }
+    await refreshChecklistPanel();
+    return map;
+  }
+
+  function patentesCoinciden(){
+    const p1 = ($('#Patente').value || '').trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+    const p2 = ($('#Patente2').value || '').trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+    if (p1 && p2 && p1 !== p2) return false;
+    return true;
+  }
+
+  function renderBlockedWithDiagnostics(data){
+    const d = data.diagnostics || {};
+    const rep = (d.reported||{});
+    const lic = (d.ocr&&d.ocr.license)||{};
+    const pres = (d.presupuesto||{});
+    const att = (d.attachments||{});
+    const ocrPlate = (d.ocr||{}).patente || '';
+    const ocrPlateMatch = (d.ocr||{}).patenteMatch;
+    const relato = (d.relato||{tags:[],detail:{}});
+
+    const check = (x)=> x===true ? '✓' : (x===false ? '✗' : '—');
+
+    let lines = [];
+    lines.push('• Patente reportada: ' + (rep.patente||'—'));
+    lines.push('  OCR patente: ' + (ocrPlate||'—') + '  (coincide: ' + (ocrPlateMatch===null?'—':(ocrPlateMatch?'Sí':'No')) + ')');
+    lines.push('• Doc. reportado (DNI): ' + (rep.doc||'—'));
+    lines.push('• Licencia (OCR): Nº ' + (lic.num||'—'));
+    lines.push('  Apellidos: ' + (lic.apellidos||'—') + ' | Nombres: ' + (lic.nombres||'—'));
+    lines.push('  Emisión: ' + (lic.fechaEmision||'—') + ' | Venc.: ' + (lic.fechaVencimiento||lic.fechaVenc||'—'));
+    lines.push('• Presupuesto: ' + (pres.amount!=='' ? (pres.amount + ' ' + (pres.currency||'')) : pres.status||'—'));
+    lines.push('• Adjuntos: Licencia '+check(att.licencia)+', Frontal '+check(att.frontal)+', Trasera '+check(att.trasera)+', Daño '+check(att.dano)+', Opcional '+check(att.opcional)+', Presupuesto '+check(att.presupuesto));
+    lines.push('• Relato tags: ' + (Array.isArray(relato.tags) ? relato.tags.join('; ') : '—'));
+
+    let friendly = data.message || 'Bloqueado por validaciones críticas.';
+    if (data.code === 'BLOCK_OCR_PLATE_MISMATCH') friendly = 'La patente de la imagen no coincide con la ingresada.';
+    if (data.code === 'BLOCK_OCR_LICENSE') friendly = 'No se pudo validar la Licencia o no coincide con el DNI.';
+    if (data.code === 'BLOCK_OCR_LICENSE_NAME') friendly = 'El nombre de la Licencia no coincide con el declarado.';
+    if (data.code === 'BLOCK_OCR_LICENSE_DATES') friendly = data.message;
+
+    alert('🛑 FORMULARIO BLOQUEADO:\n\n' + friendly + '\n\nValidaciones realizadas:\n' + lines.join('\n'));
+  }
+
+  frm.addEventListener('submit', async function(ev){
+    ev.preventDefault();
+    btnSend.disabled = true;
+
+    if (!patentesCoinciden()){
+      statusEl.textContent = '❌ Las patentes ingresadas no coinciden.';
+      btnSend.disabled = false;
+      return;
+    }
+
+    statusEl.textContent = 'Subiendo adjuntos (Paso 1/2)...';
+    try{
+      await preUploadAll();
+
+      statusEl.textContent = 'Validando y enviando (Paso 2/2)...';
+      const formData = new FormData(frm);
+      const execUrl = await new Promise(function(res,rej){
+        google.script.run.withSuccessHandler(res).withFailureHandler(rej).getWebAppUrl();
+      });
+
+      const response = await fetch(execUrl, { method: 'POST', body: formData });
+      const data = await response.json();
+
+      if (data.ok) {
+        statusEl.textContent = '✅ Solicitud registrada. ¡Gracias!';
+        frm.reset(); matchInfo.innerHTML=''; toggleAdjuntos();
+        $('#prelinks').value = ''; $('#preFolderId').value = '';
+        Object.values(CK).forEach(el=> setCK(el, '—'));
+      } else {
+        if (data.blocked) {
+          renderBlockedWithDiagnostics(data);
+          statusEl.textContent = '🛑 FORMULARIO BLOQUEADO. ('+(data.code||'')+')';
+          $('#prelinks').value = ''; $('#preFolderId').value = '';
+        } else {
+          alert('❌ Error: ' + (data.message||'desconocido'));
+          statusEl.textContent = '❌ Error de registro.';
+        }
+      }
+    }catch(e){
+      statusEl.textContent = '❌ Error: '+e.message;
+      alert('Error de red/servidor: ' + e.message);
+    }
+
+    btnSend.disabled = false;
+    setTimeout(()=>{ statusEl.textContent=''; }, 8000);
+  });
+
+  toggleAdjuntos();
+  setTimeout(runValidate, 200);
+</script>
+</body>
+</html>
